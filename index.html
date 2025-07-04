@@ -7,19 +7,77 @@
     <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js/aframe/build/aframe-ar.min.js"></script>
     <style>
       body { margin: 0; overflow: hidden; }
+      #infoBox {
+        position: absolute;
+        bottom: 10px;
+        left: 10px;
+        right: 10px;
+        max-height: 40%;
+        overflow-y: scroll;
+        color: black;
+        font-size: 14px;
+        padding: 10px;
+        background: rgba(255, 255, 255, 0.5);
+        border-radius: 8px;
+        display: none;
+        z-index: 10;
+      }
     </style>
   </head>
   <body>
     <a-scene embedded arjs>
-      <a-marker preset="hiro">
+      <a-marker preset="hiro" id="marker">
         <a-entity 
-          gltf-model="models\torii.glb"
-          scale="0.1 0.1 0.1"
-          position="0 0 0"
-          rotation="-60 0 0"
+          gltf-model="models/torii.glb"
+          scale="0.5 0.5 0.5"
+          rotation="0 0 0"
+          id="toriiModel"
         ></a-entity>
       </a-marker>
       <a-entity camera></a-entity>
     </a-scene>
+
+    <div id="infoBox">
+      <p>御由緒</p>
+      <p>式内延喜式神名帳に「駿河国有度郡三座並小云々草薙神社」と記載されており、御祭神は第12代景行天皇第二皇子日本武尊をお祀りしております。</p>
+      <p>国史社伝によれば、日本武尊は東国の蝦夷がそむいたので平定するために吾嬬国に赴きました。しかし途中で逆賊が原野に火を放って日本武尊を焼き殺そうとします。 日本武尊は出発の折に伊勢の神宮へ参拝し、おばである倭姫命より頂いた剣を抜いて「遠かたや、しけきかもと、をやい鎌の」と鎌で打ち払うように唱え、祓いて剣を振り、あたりの草をことごとく薙ぎ払ったところで手打石により火をつけました。その火は逆に逆賊の方へなびいて日本武尊は無事に難を切り抜けることが出来ました。</p>
+      <p>そして日本武尊が草を薙ぎ払い難を逃れたこの土地を草薙と呼ぶようになり、その時に日本武尊が持っていた剣は天叢雲剣から草薙剣と呼ばれるようになりました。 草薙剣は三種の神器の1つとして現在も今上天皇に代々受け継がれています。</p>
+      <p>景行天皇は息子である日本武尊の勲功の土地を尋ねようと、景行天皇53年（西暦123年）8月に天皇は郡郷に詔して曰く「冀（こいねが）わくば、日本武尊の征定された国郡を巡視する。」</p>
+      <p>景行天皇は直ちに出発され、まず伊勢に行幸され、次いで東国に向かわれ9月20日に到着され、御親しく1社を建立し、日本武尊を奉祀し、御霊代として草薙剣を奉納しました。それが草薙神社でございます。</p>
+      <p>景行天皇53年（西暦123年）9月20日依って当月当日、9月20日を以て例大祭を定めて今日に及んでおります。</p>
+      <p>その後、御霊代として奉納された草薙剣は第40代天武天皇の勅命により、朱鳥元年（西暦686年）に熱田神宮に奉祀されることとなりました。</p>
+      <p>草薙神社は静岡市内では古い神社の1つとして氏子や崇敬者の皆様から親しまれ、令和5年（西暦2023年）には創建1900年を迎える歴史ある神社でございます。</p>
+    </div>
+
+    <script>
+      const marker = document.getElementById('marker');
+      const infoBox = document.getElementById('infoBox');
+      const toriiModel = document.getElementById('toriiModel');
+
+      marker.addEventListener('markerFound', () => {
+        infoBox.style.display = 'block';
+      });
+      marker.addEventListener('markerLost', () => {
+        infoBox.style.display = 'none';
+      });
+
+      let lastX = null;
+      document.body.addEventListener('touchmove', function(e) {
+        if (lastX === null) {
+          lastX = e.touches[0].clientX;
+          return;
+        }
+        const deltaX = e.touches[0].clientX - lastX;
+        lastX = e.touches[0].clientX;
+
+        let rot = toriiModel.getAttribute('rotation');
+        rot.y += deltaX * 0.1;
+        toriiModel.setAttribute('rotation', rot);
+      });
+
+      document.body.addEventListener('touchend', function() {
+        lastX = null;
+      });
+    </script>
   </body>
 </html>
